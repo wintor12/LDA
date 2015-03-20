@@ -51,6 +51,7 @@ public class RunLDA {
 		return likelihood;
 	}
 	
+	
 	public static double lda_inference(Document doc, Model model)
 	{		
 	    double likelihood = 0, likelihood_old = 0;
