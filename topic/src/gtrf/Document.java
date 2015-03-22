@@ -33,6 +33,9 @@ public class Document {
     int num_e;   //total number of edges
     double exp_theta_square; 
     
+    int[] word_topic;//topic assigment to each word
+    double[] theta; //topic assigment to this doc
+    
     public Document(String path, String doc_name, Vocabulary voc)
     {
     	this.voc = voc;
@@ -107,6 +110,34 @@ public class Document {
 			i++;
 			this.total += count;
 		}
+    }
+    
+  //Assign topic to each word based on beta
+    //Compute theta according to the counts of each topic
+    public void assign_topic_to_word(Model model)
+    {
+    	word_topic = new int[ids.length];
+    	theta = new double[model.num_topics];
+    	for(int n = 0; n < word_topic.length; n++)
+    	{
+    		double max = model.log_prob_w[0][ids[n]];
+    		int max_k = 0;
+    		for(int k = 1; k < model.num_topics; k++)
+    		{
+				if(model.log_prob_w[k][ids[n]] > max)
+				{
+					max = model.log_prob_w[k][ids[n]];
+					max_k = k;
+				}
+    		}
+    		word_topic[n] = max_k;
+    		theta[max_k] += counts[n];
+    	}
+    	 //Compute theta for a document
+    	for(int k = 0; k < model.num_topics; k++)
+    	{
+    		theta[k] = (double)(theta[k] + model.alpha)/(total + model.num_topics * model.alpha);
+    	}
     }
 
 }

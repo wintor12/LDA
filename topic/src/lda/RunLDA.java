@@ -12,8 +12,8 @@ import org.apache.commons.math3.special.Gamma;
 
 public class RunLDA {
 
-	static String path = "/Users/tongwang/Desktop/LDA/code/data_words3/";
-	static int num_topics = 10;  //topic numbers
+	static String path = "/Users/tongwang/Desktop/LDA/code/data_words5/";
+	static int num_topics = 20;  //topic numbers
 	static int VAR_MAX_ITER = 20;
 	static double VAR_CONVERGED = 1e-6;
 	static int EM_MAX_ITER = 100;
@@ -165,7 +165,7 @@ public class RunLDA {
 			//E step
 			for(int d = 0; d < corpus.num_docs; d++)
 			{
-				if(d%10 == 0)
+				if(d%100 == 0)
 					System.out.println("document " + d);
 				
 				//Initialize gamma and phi to zero for each document
@@ -194,7 +194,7 @@ public class RunLDA {
 	        save_gamma(corpus, model, path + "res_" + num_topics + "/model/" + i + "_gamma");
 	        
 		}		
-		File likelihood_file = new File(path + "/res/likelihood");
+		File likelihood_file = new File(path + "res_" + num_topics + "/likelihood");
 		try {
 			FileUtils.writeStringToFile(likelihood_file, sb.toString());
 		} catch (IOException e) {
@@ -209,12 +209,15 @@ public class RunLDA {
 		
 		for(int d = 0; d < corpus.num_docs; d++)
 		{
-			if(d%10 == 0)
+			if(d%100 == 0)
 				System.out.println("final e step document " + d);
 			lda_inference(corpus.docs[d], model);
 			save_word_assignment(corpus.docs[d], path + "res_" + num_topics + "/word_topic_post/" + corpus.docs[d].doc_name);
-			save_top_words(20, corpus.docs[d], path + "res_" + num_topics + "/top_word/" + corpus.docs[d].doc_name);
+			save_top_words(10, corpus.docs[d], path + "res_" + num_topics + "/top_word/" + corpus.docs[d].doc_name);
 		}
+		
+		//Evaluation
+		computePerplexity(corpus, model);
 	}
 	
 
@@ -290,6 +293,50 @@ public class RunLDA {
 		}
 		try {
 			FileUtils.writeStringToFile(new File(filename), sb.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void computePerplexity(Corpus corpus, Model model)
+	{
+		System.out.println("========evaluate========");
+		double perplex = 0;
+		int N = 0;
+		StringBuilder sb = new StringBuilder();
+		for(Document doc: corpus.docs_test)
+		{
+//			sb.append(doc.doc_name);
+			//assign topic to each word in test set
+			//Compute theta based on the formula of Gibbs sampling
+			doc.assign_topic_to_word(model);
+			
+//			DecimalFormat df = new DecimalFormat("#.##");
+//			for(int k = 0; k < model.num_topics; k++)
+//			{
+//				sb.append("\t" + df.format(doc.theta[k]));
+//			}
+//			sb.append("\n");
+						
+			double log_p_w = 0;
+			for(int n = 0; n < doc.length; n++)
+			{
+				double betaTtheta = 0;
+				for(int k = 0; k < num_topics; k++)
+				{
+					betaTtheta += Math.exp(model.log_prob_w[k][doc.ids[n]])*doc.theta[k];
+				}
+				log_p_w += doc.counts[n]*Math.log(betaTtheta);
+				
+			}
+			N += doc.total;
+			perplex += log_p_w;
+		}
+		perplex = Math.exp(-(perplex/N));
+		System.out.println(perplex);
+		sb.append("Perplexity: " + perplex);
+		try {
+			FileUtils.writeStringToFile(new File(path + "res_" + num_topics + "/eval"), sb.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

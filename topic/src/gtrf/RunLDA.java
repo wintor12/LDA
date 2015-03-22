@@ -14,8 +14,8 @@ import org.apache.commons.math3.special.Gamma;
 public class RunLDA {
 	//Implement GTRF
 
-	static String path = "/Users/tongwang/Desktop/LDA/code/data_words4/";
-	static int num_topics = 6;  //topic numbers
+	static String path = "/Users/tongwang/Desktop/LDA/code/data_words6/";
+	static int num_topics = 10;  //topic numbers
 	static int VAR_MAX_ITER = 20;
 	static double VAR_CONVERGED = 1e-6;
 	static int EM_MAX_ITER = 100;
@@ -194,7 +194,7 @@ public class RunLDA {
 		//Random initialize joint probability of p(w, k), and compute p(k) by sum over p(w, k)
 		ss.random_initialize_ss();
 		model.mle(ss, true); //get initial beta
-		model.save_lda_model(path + "res_" + num_topics + "/", "init");		
+		model.save_lda_model(path + "res_" + num_topics + "_" + lambda2 + "/", "init");		
 		
 		//run EM 		
 		double likelihood, likelihood_old = 0, converged = 1;
@@ -209,7 +209,7 @@ public class RunLDA {
 			//E step
 			for(int d = 0; d < corpus.num_docs; d++)
 			{
-				if(d%10 == 0)
+				if(d%100 == 0)
 					System.out.println("document " + d);
 				
 				//Initialize gamma and phi to zero for each document
@@ -234,12 +234,12 @@ public class RunLDA {
 	        
 	        // output model, likelihood and gamma
 	        sb.append(likelihood +"\t" + converged + "\n");
-	        model.save_lda_model(path + "res_" + num_topics + "/model/", i + "");
-	        save_gamma(corpus, model, path + "res_" + num_topics + "/model/" + i + "_gamma");
-	        save_doc_para(corpus, path + "res_" + num_topics + "/model/" + i + "_doc");
+	        model.save_lda_model(path + "res_" + num_topics + "_" + lambda2 + "/model/", i + "");
+	        save_gamma(corpus, model, path + "res_" + num_topics + "_" + lambda2 + "/model/" + i + "_gamma");
+	        save_doc_para(corpus, path + "res_" + num_topics + "_" + lambda2 + "/model/" + i + "_doc");
 	        
 		}		
-		File likelihood_file = new File(path + "/res/likelihood");
+		File likelihood_file = new File(path + "res_" + num_topics + "_" + lambda2 + "/likelihood");
 		try {
 			FileUtils.writeStringToFile(likelihood_file, sb.toString());
 		} catch (IOException e) {
@@ -247,20 +247,23 @@ public class RunLDA {
 		}
 		
 		//output the final model
-		model.save_lda_model(path + "res_" + num_topics + "/", "final");
-		save_gamma(corpus, model, path + "res_" + num_topics + "/final_gamma");
-		save_doc_para(corpus, path + "res_" + num_topics + "/final_doc");
+		model.save_lda_model(path + "res_" + num_topics + "_" + lambda2 + "/", "final");
+		save_gamma(corpus, model, path + "res_" + num_topics + "_" + lambda2 + "/final_gamma");
+		save_doc_para(corpus, path + "res_" + num_topics + "_" + lambda2 + "/final_doc");
 		
 		// output the word assignments (for visualization) and top words for each document
 		
 		for(int d = 0; d < corpus.num_docs; d++)
 		{
-			if(d%10 == 0)
+			if(d%100 == 0)
 				System.out.println("final e step document " + d);
 			lda_inference(corpus.docs[d], model);
-			save_word_assignment(corpus.docs[d], path + "res_" + num_topics + "/word_topic_post/" + corpus.docs[d].doc_name);
-			save_top_words(20, corpus.docs[d], path + "res_" + num_topics + "/top_word/" + corpus.docs[d].doc_name);
+			save_word_assignment(corpus.docs[d], path + "res_" + num_topics + "_" + lambda2 + "/word_topic_post/" + corpus.docs[d].doc_name);
+			save_top_words(10, corpus.docs[d], path + "res_" + num_topics + "_" + lambda2 + "/top_word/" + corpus.docs[d].doc_name);
 		}
+		
+		//Evaluation
+		computePerplexity(corpus, model);
 	}
 	
 
@@ -364,6 +367,51 @@ public class RunLDA {
 		}
 		try {
 			FileUtils.writeStringToFile(new File(filename), sb.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public static void computePerplexity(Corpus corpus, Model model)
+	{
+		System.out.println("========evaluate========");
+		double perplex = 0;
+		int N = 0;
+		StringBuilder sb = new StringBuilder();
+		for(Document doc: corpus.docs_test)
+		{
+//			sb.append(doc.doc_name);
+			//assign topic to each word in test set
+			//Compute theta based on the formula of Gibbs sampling
+			doc.assign_topic_to_word(model);
+			
+//			DecimalFormat df = new DecimalFormat("#.##");
+//			for(int k = 0; k < model.num_topics; k++)
+//			{
+//				sb.append("\t" + df.format(doc.theta[k]));
+//			}
+//			sb.append("\n");
+						
+			double log_p_w = 0;
+			for(int n = 0; n < doc.length; n++)
+			{
+				double betaTtheta = 0;
+				for(int k = 0; k < num_topics; k++)
+				{
+					betaTtheta += Math.exp(model.log_prob_w[k][doc.ids[n]])*doc.theta[k];
+				}
+				log_p_w += doc.counts[n]*Math.log(betaTtheta);
+				
+			}
+			N += doc.total;
+			perplex += log_p_w;
+		}
+		perplex = Math.exp(-(perplex/N));
+		System.out.println(perplex);
+		sb.append("Perplexity: " + perplex);
+		try {
+			FileUtils.writeStringToFile(new File(path + "res_" + num_topics + "_" + lambda2 + "/eval"), sb.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

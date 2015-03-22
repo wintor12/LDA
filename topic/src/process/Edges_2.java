@@ -14,9 +14,9 @@ import org.apache.commons.io.FileUtils;
 
 public class Edges_2 {
 	
-	static String path_words = "/Users/tongwang/Desktop/LDA/code/data_words4/data_words/";
-	static String path_trees = "/Users/tongwang/Desktop/LDA/code/data_words4/data_trees/";
-	static String path_edges_2 = "/Users/tongwang/Desktop/LDA/code/data_words4/data_edges_2/";
+	static String path_words = "/Users/tongwang/Desktop/LDA/code/data_words6/data_words/";
+	static String path_trees = "/Users/tongwang/Desktop/LDA/code/data_words6/data_trees/";
+	static String path_edges_2 = "/Users/tongwang/Desktop/LDA/code/data_words6/data_edges_2/";
     Map<String, List<String>> map = new TreeMap<String, List<String>>();
 	
 	public static String extractParent(String wordNode)

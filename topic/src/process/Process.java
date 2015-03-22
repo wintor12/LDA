@@ -31,8 +31,8 @@ import edu.stanford.nlp.util.CoreMap;
 public class Process {
 	
 	static String path_documents = "/Users/tongwang/Desktop/LDA/code/data/";
-	static String path_words = "/Users/tongwang/Desktop/LDA/code/data_words4/data_words/";
-	static String path_trees = "/Users/tongwang/Desktop/LDA/code/data_words4/data_trees/";
+	static String path_words = "/Users/tongwang/Desktop/LDA/code/data_words5/data_words/";
+	static String path_trees = "/Users/tongwang/Desktop/LDA/code/data_words5/data_trees/";
 	static String path_stopwords = "/Users/tongwang/Desktop/LDA/code/stopwords2.txt";
 	static List<String> stopwords;
 	

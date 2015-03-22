@@ -57,11 +57,7 @@ public class Vocabulary {
     	}
     	printToFile(path + "../res/" + "idAndWord");
 	}
-	
-	public void getAdj(String path)
-	{
-		
-	}
+
 	
 	public void printToFile(String filepath) {
 		StringBuilder sb = new StringBuilder();
