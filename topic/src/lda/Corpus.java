@@ -14,7 +14,6 @@ public class Corpus {
     public Corpus(String path)
     {
     	List<String> dir = Tools.listDir(path + "data_words/");
-    	new File(path + "res/").mkdir();  //make result folder
     	// Iterate all files and get vocabulary, word id maps.
     	voc = new Vocabulary();
     	voc.getVocabulary(path + "data_words/");

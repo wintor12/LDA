@@ -12,6 +12,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.math3.special.Gamma;
 
 public class RunLDA {
+	//Implement GTRF
 
 	static String path = "/Users/tongwang/Desktop/LDA/code/data_words4/";
 	static int num_topics = 6;  //topic numbers
@@ -19,8 +20,8 @@ public class RunLDA {
 	static double VAR_CONVERGED = 1e-6;
 	static int EM_MAX_ITER = 100;
 	static double EM_CONVERGED = 1e-4;
-	static double alpha = 0.1;
-	static double lambda2 = 0.4;
+	static double alpha = 1;
+	static double lambda2 = 0.2;
 	
 	static Corpus corpus;
 	
@@ -193,7 +194,7 @@ public class RunLDA {
 		//Random initialize joint probability of p(w, k), and compute p(k) by sum over p(w, k)
 		ss.random_initialize_ss();
 		model.mle(ss, true); //get initial beta
-		model.save_lda_model(path + "res/", "init");		
+		model.save_lda_model(path + "res_" + num_topics + "/", "init");		
 		
 		//run EM 		
 		double likelihood, likelihood_old = 0, converged = 1;
@@ -233,9 +234,9 @@ public class RunLDA {
 	        
 	        // output model, likelihood and gamma
 	        sb.append(likelihood +"\t" + converged + "\n");
-	        model.save_lda_model(path + "res/model/", i + "");
-	        save_gamma(corpus, model, path + "res/model/" + i + "_gamma");
-	        save_doc_para(corpus, path + "res/model/" + i + "_doc");
+	        model.save_lda_model(path + "res_" + num_topics + "/model/", i + "");
+	        save_gamma(corpus, model, path + "res_" + num_topics + "/model/" + i + "_gamma");
+	        save_doc_para(corpus, path + "res_" + num_topics + "/model/" + i + "_doc");
 	        
 		}		
 		File likelihood_file = new File(path + "/res/likelihood");
@@ -246,9 +247,9 @@ public class RunLDA {
 		}
 		
 		//output the final model
-		model.save_lda_model(path + "res/", "final");
-		save_gamma(corpus, model, path + "res/final_gamma");
-		save_doc_para(corpus, path + "res/final_doc");
+		model.save_lda_model(path + "res_" + num_topics + "/", "final");
+		save_gamma(corpus, model, path + "res_" + num_topics + "/final_gamma");
+		save_doc_para(corpus, path + "res_" + num_topics + "/final_doc");
 		
 		// output the word assignments (for visualization) and top words for each document
 		
@@ -257,8 +258,8 @@ public class RunLDA {
 			if(d%10 == 0)
 				System.out.println("final e step document " + d);
 			lda_inference(corpus.docs[d], model);
-			save_word_assignment(corpus.docs[d], path + "res/word_topic_post/" + corpus.docs[d].doc_name);
-			save_top_words(20, corpus.docs[d], path + "res/top_word/" + corpus.docs[d].doc_name);
+			save_word_assignment(corpus.docs[d], path + "res_" + num_topics + "/word_topic_post/" + corpus.docs[d].doc_name);
+			save_top_words(20, corpus.docs[d], path + "res_" + num_topics + "/top_word/" + corpus.docs[d].doc_name);
 		}
 	}
 	

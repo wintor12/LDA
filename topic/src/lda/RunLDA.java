@@ -150,7 +150,7 @@ public class RunLDA {
 		//Random initialize joint probability of p(w, k), and compute p(k) by sum over p(w, k)
 		ss.random_initialize_ss();
 		model.mle(ss, true); //get initial beta
-		model.save_lda_model(path + "res/", "init");		
+		model.save_lda_model(path + "res_" + num_topics + "/", "init");		
 		
 		//run EM 		
 		double likelihood, likelihood_old = 0, converged = 1;
@@ -190,8 +190,8 @@ public class RunLDA {
 	        
 	        // output model, likelihood and gamma
 	        sb.append(likelihood +"\t" + converged + "\n");
-	        model.save_lda_model(path + "res/model/", i + "");
-	        save_gamma(corpus, model, path + "res/model/" + i + "_gamma");
+	        model.save_lda_model(path + "res_" + num_topics + "/model/", i + "");
+	        save_gamma(corpus, model, path + "res_" + num_topics + "/model/" + i + "_gamma");
 	        
 		}		
 		File likelihood_file = new File(path + "/res/likelihood");
@@ -202,8 +202,8 @@ public class RunLDA {
 		}
 		
 		//output the final model
-		model.save_lda_model(path + "res/", "final");
-		save_gamma(corpus, model, path + "res/final_gamma");
+		model.save_lda_model(path + "res_" + num_topics + "/", "final");
+		save_gamma(corpus, model, path + "res_" + num_topics + "/final_gamma");
 		
 		// output the word assignments (for visualization) and top words for each document
 		
@@ -212,8 +212,8 @@ public class RunLDA {
 			if(d%10 == 0)
 				System.out.println("final e step document " + d);
 			lda_inference(corpus.docs[d], model);
-			save_word_assignment(corpus.docs[d], path + "res/word_topic_post/" + corpus.docs[d].doc_name);
-			save_top_words(20, corpus.docs[d], path + "res/top_word/" + corpus.docs[d].doc_name);
+			save_word_assignment(corpus.docs[d], path + "res_" + num_topics + "/word_topic_post/" + corpus.docs[d].doc_name);
+			save_top_words(20, corpus.docs[d], path + "res_" + num_topics + "/top_word/" + corpus.docs[d].doc_name);
 		}
 	}
 	
