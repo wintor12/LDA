@@ -13,7 +13,7 @@ import org.apache.commons.math3.special.Gamma;
 public class RunLDA {
 
 	static String path = "/Users/tongwang/Desktop/LDA/code/data_words5/";
-	static int num_topics = 20;  //topic numbers
+	static int num_topics = 40;  //topic numbers
 	static int VAR_MAX_ITER = 20;
 	static double VAR_CONVERGED = 1e-6;
 	static int EM_MAX_ITER = 100;

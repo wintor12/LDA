@@ -15,7 +15,7 @@ public class RunLDA {
 	//Implement GTRF
 
 	static String path = "/Users/tongwang/Desktop/LDA/code/data_words6/";
-	static int num_topics = 10;  //topic numbers
+	static int num_topics = 40;  //topic numbers
 	static int VAR_MAX_ITER = 20;
 	static double VAR_CONVERGED = 1e-6;
 	static int EM_MAX_ITER = 100;
