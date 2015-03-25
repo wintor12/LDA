@@ -8,6 +8,7 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.math3.special.Gamma;
 
@@ -187,8 +188,10 @@ public class RunLDA {
 	    return likelihood;
 	}
 	
-	public static void run_em(Corpus corpus)
-	{			
+	public static void run_em(Corpus corpus, int K, double l)
+	{
+		num_topics = K;
+		lambda2 = l;
 		Model model = new Model(num_topics, corpus.num_terms, alpha);
 		Suffstats ss = new Suffstats(model);
 		//Random initialize joint probability of p(w, k), and compute p(k) by sum over p(w, k)
@@ -408,6 +411,7 @@ public class RunLDA {
 			perplex += log_p_w;
 		}
 		perplex = Math.exp(-(perplex/N));
+		perplex = Math.floor(perplex);
 		System.out.println(perplex);
 		sb.append("Perplexity: " + perplex);
 		try {
@@ -428,7 +432,11 @@ public class RunLDA {
 //    		if(!doc.adj.containsKey(doc.ids[i]))
 //    			System.out.println(doc.words[i]);
 //    	}
-    	RunLDA.run_em(corpus);
+    	RunLDA.run_em(corpus, 5, 0.8);
+    	RunLDA.run_em(corpus, 10, 0.8);
+    	RunLDA.run_em(corpus, 15, 0.8);
+    	RunLDA.run_em(corpus, 20, 0.8);
+    	RunLDA.run_em(corpus, 25, 0.8);
     	System.out.println("Complete!");
 	}
 

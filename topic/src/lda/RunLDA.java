@@ -333,6 +333,7 @@ public class RunLDA {
 			perplex += log_p_w;
 		}
 		perplex = Math.exp(-(perplex/N));
+		perplex = Math.floor(perplex);
 		System.out.println(perplex);
 		sb.append("Perplexity: " + perplex);
 		try {

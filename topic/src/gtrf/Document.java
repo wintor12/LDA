@@ -60,6 +60,8 @@ public class Document {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		if(text.equals(""))
+			return;
 		for(String line: text.split("\n"))
 		{
 			String word = line.substring(0, line.indexOf(':'));
